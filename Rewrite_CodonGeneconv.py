@@ -1497,6 +1497,26 @@ if __name__ == '__main__':
     test.get_mle(False, True, 0, 'BFGS')
     print test.tau
     print test.gen_save_file_name()
-    test._loglikelihood2()
     test.get_individual_summary(summary_path = './Summary/', file_name = './Summary/MG94' + '_'.join(paralog) + '_nonclock_summary.txt')
+
+    test2 = ReCodonGeneconv( newicktree, alignment_file, paralog, Model = 'MG94', Force = {5:0.0}, clock = False)
+    test2.get_mle(True, True, 0, 'BFGS')
+    print test2.tau
+    print test2.gen_save_file_name()
+    test2.get_individual_summary(summary_path = './Summary/', file_name = './Summary/MG94_Force_' + '_'.join(paralog) + '_nonclock_summary.txt')
+
+
+    test3 = ReCodonGeneconv( newicktree, alignment_file, paralog, Model = 'MG94', Force = None, clock = True)
+    test3.get_mle(False, True, 0, 'BFGS')
+    print test3.tau
+    print test3.gen_save_file_name()
+    test3.get_individual_summary(summary_path = './Summary/', file_name = './Summary/MG94' + '_'.join(paralog) + '_clock_summary.txt')
+
+    test4 = ReCodonGeneconv( newicktree, alignment_file, paralog, Model = 'MG94', Force = {5:0.0}, clock = True)
+    test4.get_mle(True, True, 0, 'BFGS')
+    print test4.tau
+    print test4.gen_save_file_name()
+    test4.get_individual_summary(summary_path = './Summary/', file_name = './Summary/MG94_Force_' + '_'.join(paralog) + '_clock_summary.txt')
+
+
 
