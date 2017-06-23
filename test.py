@@ -1,4 +1,4 @@
-from HMMTract import *
+from IGCexpansion.HMMTract import *
 from IGCexpansion.CodonGeneconv import ReCodonGeneconv
 import numdifftools as nd
 
@@ -66,4 +66,4 @@ if __name__ == '__main__':
         np.savetxt('./summary/' + '_'.join(paralog) + '_MG94_nonclock_HMM_lnL_surface.txt', np.array(lnL_surf))
 
 
-np.savetxt('./HMM_tract_MG94_nonclock_summary.txt', np.matrix(summary_mat), delimiter = '\t')
+    np.savetxt('./HMM_tract_MG94_nonclock_summary.txt', np.matrix(summary_mat), delimiter = '\t')
