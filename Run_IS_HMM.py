@@ -68,23 +68,29 @@ if __name__ == '__main__':
     seq_index_file = './' + '_'.join(paralog) + '_seq_index.txt'
     state_list = ['No IGC event (Si = 0)','At least one IGC event (Si > 0)']
 
-    x_3 = np.array([-0.69727878,
-                  -0.53710801,
-                  -0.72400474,
-                  0.72385788,
-                  -0.18983735,
-                  -2.5199719,
-                  -2.01452935,
-                  -1.0337633,
-                  -3.29369029,
-                  -1.75318807,
-                  -3.25869777,
-                  -2.27341043,
-                  -4.20160402,
-                  -4.110472,
-                  -0.5])
+    save_name = './save/EDN_ECP_Ind_MG94_IGC_save.txt'
+    summary_file = './summary/EDN_ECP_Ind_MG94_HMM_summary.txt'
+    summary_file_1D = './summary/EDN_ECP_Ind_MG94_HMM_1D_summary.txt'
+    Ind_MG94_IGC = IndCodonGeneconv( newicktree, alignment_file, paralog, Model = 'MG94', Force = Force, clock = None, save_path = './save/',
+                             save_name = save_name)
+    Ind_MG94_IGC.get_mle(True, True, 0, 'BFGS')
+    x = np.concatenate((Ind_MG94_IGC.x, [0.0]))
+
+    IGC_sitewise_lnL_file = summary_path + '_'.join(paralog) + '_Ind_MG94_nonclock_sw_lnL.txt'
+    NOIGC_sitewise_lnL_file = summary_path + 'NOIGC_' + '_'.join(paralog) + '_Ind_MG94_nonclock_sw_lnL.txt'
+        
+    Ind_MG94_IGC.get_sitewise_loglikelihood_summary(IGC_sitewise_lnL_file, False)
+    Ind_MG94_IGC.get_sitewise_loglikelihood_summary(NOIGC_sitewise_lnL_file, True)
+
     
-    test = HMMJSGeneconv(save_file, newicktree, alignment_file, paralog, summary_path, x_3, save_path, IGC_save_name, Force_save_name,
-                         IGC_sitewise_lnL_file, Force_sitewise_lnL_file,
-                         state_list, seq_index_file)
-    test.get_mle(display = True, two_step = False, OneDimension = True)
+    test = HMMJSGeneconv(save_file, newicktree, alignment_file, paralog, summary_path, x, save_path, IGC_sitewise_lnL_file, NOIGC_sitewise_lnL_file,                         state_list, seq_index_file)
+    
+
+    log_p_list = np.log(3.0/np.array(range(3, 1001)))
+    plot_file = './plot/HMM_' + '_'.join(paralog) + '_lnL_1D_surface.txt'
+    test.plot_tract_p(log_p_list, plot_file)
+
+    test.get_mle(display = True, two_step = True, One_Dimension = True)
+    test.get_summary(summary_file_1D)
+    
+    
