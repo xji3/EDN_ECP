@@ -1,4 +1,5 @@
 from IGCexpansion.CodonGeneconv import ReCodonGeneconv
+from IGCexpansion.IndCodonGeneconv import IndCodonGeneconv
 import argparse
 
 def main(args):
@@ -41,3 +42,13 @@ if __name__ == '__main__':
     test_force._loglikelihood2()
     test_force.get_sitewise_loglikelihood_summary('./Summary/Force_' + '_'.join(paralog) + '_MG94_nonclock_sw_lnL.txt')
 
+    Force = None
+    test = IndCodonGeneconv( newicktree, alignment_file, paralog, Model = 'MG94', Force = Force, clock = None)
+    test.get_mle(True, True, 0, 'BFGS')
+    test.get_sitewise_loglikelihood_summary('./Summary/' + '_'.join(paralog) + '_Ind_MG94_nonclock_sw_lnL.txt')
+
+    Force = {5:0.0}
+    test_force = IndCodonGeneconv( newicktree, alignment_file, paralog, Model = 'MG94', Force = Force, clock = None)
+    test_force.update_by_x(test.x)
+    test_force._loglikelihood2()
+    test_force.get_sitewise_loglikelihood_summary('./Summary/Force_' + '_'.join(paralog) + '_Ind_MG94_nonclock_sw_lnL.txt')
