@@ -96,3 +96,57 @@ colnames(summary.mat) <- c("lnL", "max lnL", "tract length",
                            "df", "d^2f", "c.i. tract length", "c.i tract length")
 summary.mat
 ```
+
+\newpage
+09132017 update
+
+Now plot lnL surface of MG94+IS-IGC+HMM model.
+
+The derivatives are $\frac{{\partial \ln L}}{{\partial \ln {p_{tract}}}}$ for 
+the first order and $\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}$ for
+second order. 
+
+The variance is calculated by:
+$Var(ln(p_{tract}))=\frac{1}{I(ln(p_{tract}))} \approx - \frac{1}{\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}}$
+
+95% confidence interval for $ln(p_{tract})$ is $ln(p_{tract}) \pm 1.96 * \sqrt {Var(\ln ({p_{tract}}))}$
+
+By transforming to $3.0 / p_{tract}$ to get the average tract length in nucleotide.
+
+
+```{r}
+# plot one paralog
+paralog = "EDN_ECP"
+lnL.ratio <- as.vector(read.table(paste("./summary/", paralog, "_Ind_MG94_HMM_Posterior_lnL.txt", sep = "")))
+Viterbi.path <- as.vector(read.table(paste("./summary/", paralog, "_Ind_MG94_HMM_Viterbi_array.txt", sep = "")))
+lnL.surface <- as.vector(read.table(paste("./plot/HMM_", paralog, "_lnL_1D_surface.txt", sep = "")))
+
+plot(1:dim(lnL.ratio)[1], lnL.ratio[, 2] - lnL.ratio[, 1], xlab = "codon number", ylab = "log values",
+     type = "l", col = "black", lty = 1,
+     main = paste(paralog, " HMM result"),
+     ylim = c(min(-0.5, min(lnL.ratio[, 2] - lnL.ratio[, 1])), max(lnL.ratio[, 2] - lnL.ratio[, 1])))
+lines(1:dim(Viterbi.path)[1], Viterbi.path[, 1], type = "S", lty = 2, col = "red")
+legend(1, max(lnL.ratio[, 2] - lnL.ratio[, 1]), legend = c("log posterior ratio", "Viterbi path"),
+       lty = c(1, 2), col = c( "black", "red"))
+
+plot.new()
+plot(-lnL.surface[, 1],lnL.surface[, 2], xlab = "log tract length in codon", ylab= "lnL", type = "l", col = "black", lty = 1,
+     main = paste(paralog, " lnL surface"))
+abline(v = log(6.7/3.), col = "red")
+
+summary.mat <- read.table("./Summary/EDN_ECP_Ind_MG94_HMM_1D_summary.txt")
+hessian <- read.table("./Summary/EDN_ECP_Ind_MG94_HMM_Hessian.txt")
+
+# Now calculate standard deviation of lnP
+lnP <- log(summary.mat[10,1])
+sd.lnP <- 1.0 / sqrt(-hessian[2, 1])
+low.cf <- exp(lnP - 1.96 * sd.lnP)
+up.cf  <- exp(lnP + 1.96 * sd.lnP)
+up.cf[up.cf > 1] <- 1.0
+show.mat <- matrix(c(summary.mat[1,1], max(-lnL.surface[, 2]), 3.0/summary.mat[10, 1], 
+              hessian[1,1], hessian[2,1], 3.0 / up.cf, 3.0 / low.cf), 1, 7)
+rownames(show.mat) <- c("EDN_ECP")
+colnames(show.mat) <- c("lnL", "max lnL", "tract length",
+                           "df", "d^2f", "c.i. tract length", "c.i tract length")
+show.mat
+```

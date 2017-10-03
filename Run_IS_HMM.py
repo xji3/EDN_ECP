@@ -92,5 +92,15 @@ if __name__ == '__main__':
 
     test.get_mle(display = True, two_step = True, One_Dimension = True)
     test.get_summary(summary_file_1D)
+
+    grad, hess = test.get_Hessian(True)
+    hessian_summary_file = './summary/EDN_ECP_Ind_MG94_HMM_Hessian.txt'
+    np.savetxt(open(hessian_summary_file, 'w+'), np.matrix([[grad], [hess]]), delimiter = ' ', footer = 'Grad Hessian')
     
-    
+    lnL_array = test.hmmtract.get_posterior()
+    posterior_lnL_file = './summary/EDN_ECP_Ind_MG94_HMM_Posterior_lnL.txt'
+    np.savetxt(open(posterior_lnL_file, 'w+'), np.matrix(lnL_array).T, delimiter = ' ', footer = 'Si=0 Si=1')
+
+    Viterbi_array = test.hmmtract.Viterbi()[1]
+    Viterbi_array_file = './summary/EDN_ECP_Ind_MG94_HMM_Viterbi_array.txt'
+    np.savetxt(open(Viterbi_array_file, 'w+'), np.matrix(Viterbi_array).T, delimiter = ' ', footer = 'Viterbi')
