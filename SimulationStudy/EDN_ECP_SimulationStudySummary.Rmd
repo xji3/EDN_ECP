@@ -1,0 +1,185 @@
+---
+title: "SimulationStudySummary"
+author: "Xiang Ji"
+date: "9/7/2017"
+output:
+html_document: default
+pdf_document: default
+---
+
+This R markdown file summarizes Simulation Study results. 
+
+```{r}
+rm(list=ls())  # clean up workspace
+setwd("/Users/xji3/GitFolders/EDN_ECP/SimulationStudy/")
+
+source("./ReadInEDNECP.R")
+```
+
+####09152017
+
+Show the PSJS estimated results for Simulated datasets with estimated tau
+
+```{r}
+realized.tract.dist <- function(L, p){
+  x <- 1:(L-1)
+  dist.1 <- (2 + (L-1-x)*p)/(1.0/p + L -1.)*(1-p)^(x-1)
+  dist.L <- 1/p/(1.0/p + L -1.)*(1-p)^(L-1)
+  dist <- c(dist.1, dist.L)
+  mean.L <- sum(x * dist.1) + L*dist.L
+  var.L <- sum(x^2 * dist.1) + L^2*dist.L - mean.L^2
+  return(list(dist = dist, mean = mean.L, sd = sqrt(var.L)))
+}
+
+```
+
+```{r}
+Tract.list <- c(3.0, 10.0, 50.0)
+for(tract in Tract.list){
+  target_summary <- get(paste("PSJS_HKY_Tract_", toString(tract), "_combined_summary", sep = ""))
+  col.names <- target_summary["tract_length", ] < 10*tract
+  sim_info <- get(paste("sim.tract.", toString(tract), sep = ""))
+  
+  hist(target_summary["tract_length", col.names], breaks = 50,
+       main = paste("PSJS Estimated Tract length 1/p, Tract = ", toString(tract), ".0 ", sep = ""))
+  abline(v =  realized.tract.dist(471, 1.0/tract)$mean, col = "blue")
+  abline(v =  tract, col = 2)
+  abline(v =  mean(sim_info["mean subtract length", ]), col = "green")
+  
+  hist(-log(target_summary["tract_length", col.names]), breaks = 50,
+       main = paste("PSJS Estimated ln(p), Tract = ", toString(tract), ".0", sep = ""))
+  abline(v = log(1.0 / realized.tract.dist(471, 1.0/tract)$mean), col = "blue")
+  abline(v = log(1.0 / tract), col = 2)
+  abline(v = log(1.0 / mean(sim_info["mean subtract length", ])), col = "green")
+  
+  
+  hist((1/target_summary["tract_length", col.names]), breaks = 50,
+       main = paste("PSJS Estimated p, Tract = ", toString(tract), ".0", sep = ""))
+  abline(v = 1.0 / tract, col = 2)
+  abline(v = 1.0 / realized.tract.dist(471, 1.0/tract)$mean, col = "blue")
+  abline(v = 1.0 / mean(sim_info["mean subtract length", ]), col = "green")
+  
+  plot(sim_info["num IGC", ], sim_info["mean potential tract length", ], 
+       main = paste("Simulated potential tract length, Tract = ", toString(tract), sep = ""), 
+       xlab = "number of IGC events", ylab = "mean potential tract length")
+  abline(h = tract, col = "red")
+  abline(h = mean(sim_info["mean subtract length", ]), col = "green")
+  
+  plot(sim_info["num IGC", ], sim_info["mean realized tract length", ], 
+       main = paste("Simulated realized tract length, Tract = ", toString(tract), sep = ""),
+       xlab = "number of IGC events", ylab = "mean realized tract length")
+  abline(h = realized.tract.dist(471, 1/tract)$mean, col = "red")
+  abline(h = mean(sim_info["mean subtract length", ]), col = "green")
+  
+  plot(sim_info["num IGC", colnames(target_summary)[col.names]], target_summary["tract_length", col.names],
+       main = paste("PSJS estimate of Tract ", toString(tract), sep = ""),
+       xlab = "number of IGC events", ylab = "PSJS estimated tract length")
+  abline(h = tract, col = "red")
+  abline(h = realized.tract.dist(471, 1/tract)$mean, col = "blue")
+  abline(h = mean(sim_info["mean subtract length", ]), col = "green")
+  
+  plot(sim_info["num IGC", colnames(target_summary)[col.names]], target_summary["tract_length", col.names],
+       main = paste("PSJS estimate of Tract ", toString(tract), sep = ""),
+       xlab = "number of IGC events", ylab = "PSJS estimated tract length")
+  abline(h = tract, col = "red")
+  abline(h = realized.tract.dist(471, 1/tract)$mean, col = "blue")
+  abline(h = mean(sim_info["mean subtract length", ]), col = "green")
+  
+  plot(sim_info["num IGC with at least two variant sites", colnames(target_summary)[col.names]], 
+       target_summary["tract_length", col.names],
+       main = paste(" PSJS estimated vs num IGC >1 variant sites - Tract ", toString(tract), sep = ""),
+       xlab = "num IGC with at least two variant sites", ylab = "PSJS estimated tract length")
+  abline(h = tract, col = 2)
+  abline(h = mean(sim_info["mean subtract length", ]), col = "green")
+  
+  # Now plot kappa estimates
+  plot(sim_info["num IGC", colnames(target_summary)[col.names]], 
+       target_summary["kappa", col.names],
+       main = paste("PSJS kappa, Tract = ", toString(tract), sep = ""),
+       xlab = "Num IGC", ylab = "PSJS estimated kappa")
+  abline(h = 2.1148820530158794, col = 2)
+  
+  # Now plot r2 estimates
+  plot(sim_info["num IGC", colnames(target_summary)[col.names]], 
+       target_summary["r2", col.names],
+       main = paste("PSJS r2, Tract = ", toString(tract), sep = ""),
+       xlab = "Num IGC", ylab = "PSJS estimated r2")
+  abline(h = 1.5189901654372941, col = 2)
+  
+  # Now plot r3 estimates
+  plot(sim_info["num IGC", colnames(target_summary)[col.names]], 
+       target_summary["r3", col.names],
+       main = paste("PSJS r3, Tract = ", toString(tract), sep = ""),
+       xlab = "Num IGC", ylab = "PSJS estimated r3")
+  abline(h = 1.5578589357425792, col = 2)
+  
+  # Now plot initiation rate estimates
+  plot(sim_info["num IGC", colnames(target_summary)[col.names]], 
+       target_summary["init_rate", col.names],
+       main = paste("PSJS init_rate, Tract = ", toString(tract), sep = ""),
+       xlab = "Num IGC", ylab = "PSJS estimated init_rate")
+  abline(h = 2.4307123664566772 / tract, col = 2)
+  
+  # Now plot tract p estimates
+  plot(sim_info["num IGC", colnames(target_summary)[col.names]], 
+       1.0/target_summary["tract_length", col.names],
+       main = paste("PSJS tract_p, Tract = ", toString(tract), sep = ""),
+       xlab = "Num IGC", ylab = "PSJS estimated tract_p")
+  abline(h = 1.0 / tract, col = 2)
+  
+  # Now plot Tau estimates
+  plot(sim_info["num IGC", colnames(target_summary)[col.names]], 
+       target_summary["init_rate", col.names]*target_summary["tract_length", col.names],
+       main = paste("PSJS Tau, Tract = ", toString(tract), sep = ""),
+       xlab = "Num IGC", ylab = "PSJS estimated Tau")
+  abline(h = 2.4307123664566772, col = 2) 
+  
+  plot(sim_info["num IGC", colnames(target_summary)[col.names]], 
+       target_summary["init_rate", col.names]*target_summary["tract_length", col.names]*3.0/(1.0 +target_summary["r2", col.names] + target_summary["r3", col.names]),
+       main = paste("PSJS Weighted Tau, Tract = ", toString(tract), sep = ""),
+       xlab = "Num IGC", ylab = "PSJS Tau*3/(1+r2+r3)")
+  abline(h = 1.7886698571354107, col = 2) 
+  
+  # Now plot initiation rate vs tract length
+  plot(target_summary["tract_length", col.names], 
+       target_summary["init_rate", col.names],
+       main = paste("PSJS init_rate, Tract = ", toString(tract), sep = ""),
+       xlab = "Tract length", ylab = "initiation rate")
+  lines(sort(target_summary["tract_length", col.names]), 2.4307123664566772/sort(target_summary["tract_length", col.names]), 
+        col = "red", type = "l")  
+  
+  plot(sim_info["mean realized tract length", colnames(target_summary)[col.names]], 
+       target_summary["tract_length", col.names],
+       main = paste(" mean realized vs PSJS estimated Tract ", toString(tract), sep = ""),
+       xlab = "mean realized IGC tract length", ylab = "PSJS estimated")
+  abline(a= 0.0, b = 1.0, col = "red") 
+  
+  plot(sim_info["mean potential tract length", colnames(target_summary)[col.names]], 
+       target_summary["tract_length", col.names],
+       main = paste(" mean potential vs PSJS estimated Tract ", toString(tract), sep = ""),
+       xlab = "mean potential IGC tract length", ylab = "PSJS estimated")
+  abline(a = 0.0, b = 1.0, col = 2) 
+  
+  plot(sim_info["mean subtract length", colnames(target_summary)[col.names]], 
+       target_summary["tract_length", col.names],
+       main = paste(" mean longest variant pair length vs PSJS estimated Tract ", toString(tract), sep = ""),
+       xlab = "mean longest variant pair length", ylab = "PSJS estimated")
+  abline(a = 0.0, b = 1.0, col = "green") 
+  
+  
+  print(paste("Tract = ", toString(tract), ".0 combined PSJS HKY Results", sep = ""))
+  print(matrix(c("Total samples", sum(col.names),
+                 "mean estimates", mean(target_summary["tract_length", col.names]), 
+                 "sd estimates", sd(target_summary["tract_length", col.names]),
+                 "mean longest variant pair", mean(sim_info["mean subtract length", col.names]),
+                 "sd longest variant pair", sd(sim_info["mean subtract length", col.names])), 2, 5))  
+  
+}
+
+```
+
+save workspace now
+
+```{r}
+save.image("./SimulationStudy.RData")
+```

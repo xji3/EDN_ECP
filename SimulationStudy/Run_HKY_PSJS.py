@@ -19,7 +19,7 @@ def main(args):
     else:
         raise Exception('Check Tau_case input!')
     
-    gene_to_orlg_file = '../GeneToOrlg/EDN_ECP_GeneToOrlg.txt'
+    gene_to_orlg_file = '../EDN_ECP_GeneToOrlg.txt'
     alignment_file = '.' + case + '' + str(geo) + '_HKY/sim_' + str(sim_num) + '/EDN_ECP_sim_' + str(sim_num) + '.fasta'
     newicktree = '../input_tree.newick'
     DupLosList = '../EDN_ECP_DupLost.txt'

@@ -32,7 +32,7 @@ def main(args):
 
 
     test_JS = JSGeneconv(alignment_file, gene_to_orlg_file, args.cdna, tree_newick, DupLosList, x_js, pm_model, IGC_pm,
-                         args.rate_variation, node_to_pos, terminal_node_list, save_file, log_file = log_file)
+                         args.rate_variation, node_to_pos, terminal_node_list, save_file)
     test_JS.get_mle()
     #test_JS.get_expectedNumGeneconv()
     test_JS.get_individual_summary(summary_file)
@@ -67,10 +67,10 @@ def main(args):
                            [ test_JS.jsmodel.x_js[-1] - np.log(args.tract_length), - np.log(args.tract_length) ]))
     test = PSJSGeneconv(alignment_file, gene_to_orlg_file, seq_index_file, args.cdna, args.allow_same_codon, tree_newick, DupLosList, x_js, pm_model, IGC_pm,
                       args.rate_variation, node_to_pos, terminal_node_list, save_file, log_file, force)
-##    x = np.concatenate((test_JS.jsmodel.x_js[:-1], \
-##                           [ test_JS.jsmodel.x_js[-1] - np.log(args.tract_length), - np.log(args.tract_length) ],
-##                           test_JS.x[len(test_JS.jsmodel.x_js):]))
-##    test.unpack_x(x)
+    x = np.concatenate((test_JS.jsmodel.x_js[:-1], \
+                           [ test_JS.jsmodel.x_js[-1] - np.log(args.tract_length), - np.log(args.tract_length) ],
+                           test_JS.x[len(test_JS.jsmodel.x_js):]))
+    test.unpack_x(x)
 
     if args.dim == 1:
         test.optimize_x_IGC(dimension = 1)

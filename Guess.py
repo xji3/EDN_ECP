@@ -73,8 +73,8 @@ if __name__ == '__main__':
 
     MyStruct = namedtuple('MyStruct', 'paralog1 paralog2 tract_length dim cdna rate_variation allow_same_codon guess')
     args = MyStruct(paralog1 = 'EDN', paralog2 = 'ECP', tract_length = 30.0, dim = 1,
-                    cdna = True, rate_variation = False, allow_same_codon = True,
-                    guess = 1)
+                    cdna = True, rate_variation = True, allow_same_codon = True,
+                    guess = 2)
 
     paralog = [args.paralog1, args.paralog2]
     
