@@ -52,3 +52,4 @@ if __name__ == '__main__':
     test_force.update_by_x(test.x)
     test_force._loglikelihood2()
     test_force.get_sitewise_loglikelihood_summary('./Summary/Force_' + '_'.join(paralog) + '_Ind_MG94_nonclock_sw_lnL.txt')
+

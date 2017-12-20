@@ -49,16 +49,25 @@ def main(args):
         save_file = './save/PSJS_HKY_'+ '_'.join(paralog) + '_' + IGC_pm.replace(' ', '_') + '_init_' + str(args.tract_length) + '_nonclock_save.txt'
         log_file = './log/PSJS_HKY_'+ '_'.join(paralog) + '_' + IGC_pm.replace(' ', '_') + '_init_' + str(args.tract_length) + '_nonclock_log.txt'
         summary_file = './summary/PSJS_HKY_'+ '_'.join(paralog) + '_' + IGC_pm.replace(' ', '_') + '_init_' + str(args.tract_length) + '_nonclock_summary.txt'
+        gradient_file = './summary/PSJS_HKY_'+ '_'.join(paralog) + '_' + IGC_pm.replace(' ', '_') + '_init_' + str(args.tract_length) + '_nonclock_gradient.txt'
+        hessian_file = './summary/PSJS_HKY_'+ '_'.join(paralog) + '_' + IGC_pm.replace(' ', '_') + '_init_' + str(args.tract_length) + '_nonclock_hessian.txt'
+        godambe_file = './summary/PSJS_HKY_'+ '_'.join(paralog) + '_' + IGC_pm.replace(' ', '_') + '_init_' + str(args.tract_length) + '_nonclock_godambe.txt'
 
     if args.rate_variation:
         if args.allow_same_codon:
             save_file = save_file.replace('_nonclock', '_rv_SCOK_nonclock')
             log_file = log_file.replace('_nonclock', '_rv_SCOK_nonclock')
             summary_file = summary_file.replace('_nonclock', '_rv_SCOK_nonclock')
+            gradient_file = gradient_file.replace('_nonclock', '_rv_SCOK_nonclock')
+            hessian_file = hessian_file.replace('_nonclock', '_rv_SCOK_nonclock')
+            godambe_file = godambe_file.replace('_nonclock', '_rv_SCOK_nonclock')
         else:
             save_file = save_file.replace('_nonclock', '_rv_NOSC_nonclock')
             log_file = log_file.replace('_nonclock', '_rv_NOSC_nonclock')
             summary_file = summary_file.replace('_nonclock', '_rv_NOSC_nonclock')
+            gradient_file = summary_file.replace('_nonclock', '_rv_NOSC_nonclock')
+            hessian_file = hessian_file.replace('_nonclock', '_rv_NOSC_nonclock')
+            godambe_file = godambe_file.replace('_nonclock', '_rv_NOSC_nonclock')
 
         
     force = None
@@ -67,10 +76,10 @@ def main(args):
                            [ test_JS.jsmodel.x_js[-1] - np.log(args.tract_length), - np.log(args.tract_length) ]))
     test = PSJSGeneconv(alignment_file, gene_to_orlg_file, seq_index_file, args.cdna, args.allow_same_codon, tree_newick, DupLosList, x_js, pm_model, IGC_pm,
                       args.rate_variation, node_to_pos, terminal_node_list, save_file, log_file, force)
-    x = np.concatenate((test_JS.jsmodel.x_js[:-1], \
-                           [ test_JS.jsmodel.x_js[-1] - np.log(args.tract_length), - np.log(args.tract_length) ],
-                           test_JS.x[len(test_JS.jsmodel.x_js):]))
-    test.unpack_x(x)
+##    x = np.concatenate((test_JS.jsmodel.x_js[:-1], \
+##                           [ test_JS.jsmodel.x_js[-1] - np.log(args.tract_length), - np.log(args.tract_length) ],
+##                           test_JS.x[len(test_JS.jsmodel.x_js):]))
+##    test.unpack_x(x)
 
     if args.dim == 1:
         test.optimize_x_IGC(dimension = 1)
@@ -83,7 +92,10 @@ def main(args):
     pairwise_lnL_summary_file = summary_file.replace('_summary.txt', '_lnL_summary.txt')
     test.get_pairwise_loglikelihood_summary(pairwise_lnL_summary_file)
 
-
+    Godambe_x = np.array([test.psjsmodel.x_IGC[0] - test.psjsmodel.x_IGC[1], test.psjsmodel.x_IGC[1] - np.log(1.0 - np.exp(test.psjsmodel.x_IGC[1]))])
+    godambe = test.get_Godambe_matrix(Godambe_x)
+    np.savetxt(open(godambe_file, 'w+'), np.array(godambe))
+    test.get_gradient_hessian(Godambe_x, gradient_file, hessian_file)
 
 
 if __name__ == '__main__':
