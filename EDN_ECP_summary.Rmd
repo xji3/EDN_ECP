@@ -44,109 +44,192 @@ colSums(ECP.EDN.MG94[26:33, ] + ECP.EDN.MG94[34:41, ])/colSums(ECP.EDN.MG94[42:4
 
 ```
 
+<!-- \newpage -->
+<!-- 04212017 update -->
+
+<!-- Now plot posterior log likelihood ratio: $ln(\frac{Pr(S_i = 1 | x)}{Pr(S_i = 0 | x)}$. -->
+
+<!-- The derivatives are $\frac{{\partial \ln L}}{{\partial \ln {p_{tract}}}}$ for  -->
+<!-- the first order and $\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}$ for -->
+<!-- second order.  -->
+
+<!-- The variance is calculated by: -->
+<!-- $Var(ln(p_{tract}))=\frac{1}{I(ln(p_{tract}))} \approx - \frac{1}{\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}}$ -->
+
+<!-- 95% confidence interval for $ln(p_{tract})$ is $ln(p_{tract}) \pm 1.96 * \sqrt {Var(\ln ({p_{tract}}))}$ -->
+
+<!-- By transforming to $3.0 / p_{tract}$ to get the average tract length in nucleotide. -->
+
+<!-- ```{r} -->
+<!-- # plot one paralog -->
+<!-- paralog = "EDN_ECP" -->
+<!-- lnL.ratio <- as.vector(read.table(paste("./summary/", paralog, "_MG94_nonclock_HMM_log_posterior_ratio.txt", sep = ""))) -->
+<!-- Viterbi.path <- as.vector(read.table(paste("./summary/", paralog, "_MG94_nonclock_HMM_Viterbi_path.txt", sep = ""))) -->
+<!-- lnL.surface <- as.vector(read.table(paste("./summary/", paralog, "_MG94_nonclock_HMM_lnL_surface.txt", sep = ""))) -->
+<!-- IGC.sw.lnL <- as.vector(read.table(paste("./summary/", paralog, "_MG94_nonclock_sw_lnL.txt", sep = ""))) -->
+<!-- Force.sw.lnL <- as.vector(read.table(paste("./summary/Force_", paralog, "_MG94_nonclock_sw_lnL.txt", sep = ""))) -->
+
+<!-- plot(lnL.ratio[, 1], xlab = "codon number", ylab = "log values", -->
+<!--      type = "l", col = "black", lty = 1, -->
+<!--      main = paste(paralog, " HMM result"), -->
+<!--      ylim = c(min(-0.5, min(lnL.ratio)), max(lnL.ratio))) -->
+<!-- lines(1:dim(Viterbi.path)[1], Viterbi.path[, 1], type = "S", lty = 2, col = "red") -->
+<!-- #lines(1:dim(IGC.sw.lnL)[1], IGC.sw.lnL[, 2] - Force.sw.lnL[, 2], type = "l", lty = 3, col = "red") -->
+<!-- legend(1, max(lnL.ratio), legend = c("log posterior ratio", "Viterbi path"), -->
+<!--        lty = c(1, 2), col = c( "black", "red")) -->
+
+<!-- plot(-lnL.surface[, 1], xlab = "tract length in nucleotide", ylab= "lnL", type = "l", col = "black", lty = 1, -->
+<!--      main = paste(paralog, " lnL surface")) -->
+
+<!-- summary.mat <- read.table("./HMM_tract_MG94_nonclock_summary.txt") -->
+
+<!-- # Now calculate standard deviation of lnP -->
+<!-- lnP <- log(3.0 / summary.mat[, 3]) -->
+<!-- sd.lnP <- 1.0 / sqrt(-summary.mat[, 7]) -->
+<!-- low.cf <- exp(lnP - 1.96 * sd.lnP) -->
+<!-- up.cf  <- exp(lnP + 1.96 * sd.lnP) -->
+<!-- up.cf[up.cf > 1] <- 1.0 -->
+<!-- summary.mat <- cbind(summary.mat, 3.0 / up.cf, 3.0 / low.cf) -->
+<!-- rownames(summary.mat) <- c("EDN_ECP") -->
+<!-- colnames(summary.mat) <- c("lnL", "max lnL", "tract length", -->
+<!--                            "Pr(S_0)", "Pr(S_1)", -->
+<!--                            "df", "d^2f", "c.i. tract length", "c.i tract length") -->
+<!-- summary.mat -->
+<!-- ``` -->
+
+<!-- \newpage -->
+<!-- 09132017 update -->
+
+<!-- Now plot lnL surface of MG94+IS-IGC+HMM model. -->
+
+<!-- The derivatives are $\frac{{\partial \ln L}}{{\partial \ln {p_{tract}}}}$ for -->
+<!-- the first order and $\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}$ for -->
+<!-- second order. -->
+
+<!-- The variance is calculated by: -->
+<!-- $Var(ln(p_{tract}))=\frac{1}{I(ln(p_{tract}))} \approx - \frac{1}{\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}}$ -->
+
+<!-- 95% confidence interval for $ln(p_{tract})$ is $ln(p_{tract}) \pm 1.96 * \sqrt {Var(\ln ({p_{tract}}))}$ -->
+
+<!-- By transforming to $3.0 / p_{tract}$ to get the average tract length in nucleotide. -->
+
+
+<!-- ```{r} -->
+<!-- # plot one paralog -->
+<!-- paralog = "EDN_ECP" -->
+<!-- lnL.ratio <- as.vector(read.table(paste("./summary/", paralog, "_Ind_MG94_HMM_Posterior_lnL.txt", sep = ""))) -->
+<!-- Viterbi.path <- as.vector(read.table(paste("./summary/", paralog, "_Ind_MG94_HMM_Viterbi_array.txt", sep = ""))) -->
+<!-- lnL.surface <- as.vector(read.table(paste("./plot/HMM_", paralog, "_lnL_1D_surface.txt", sep = ""))) -->
+
+<!-- plot(1:dim(lnL.ratio)[1], lnL.ratio[, 2] - lnL.ratio[, 1], xlab = "codon number", ylab = "log values", -->
+<!--      type = "l", col = "black", lty = 1, -->
+<!--      main = paste(paralog, " HMM result"), -->
+<!--      ylim = c(min(-0.5, min(lnL.ratio[, 2] - lnL.ratio[, 1])), max(lnL.ratio[, 2] - lnL.ratio[, 1]))) -->
+<!-- lines(1:dim(Viterbi.path)[1], Viterbi.path[, 1], type = "S", lty = 2, col = "red") -->
+<!-- legend(1, max(lnL.ratio[, 2] - lnL.ratio[, 1]), legend = c("log posterior ratio", "Viterbi path"), -->
+<!--        lty = c(1, 2), col = c( "black", "red")) -->
+
+<!-- plot.new() -->
+<!-- plot(-lnL.surface[, 1],lnL.surface[, 2], xlab = "log tract length in codon", ylab= "lnL", type = "l", col = "black", lty = 1, -->
+<!--      main = paste(paralog, " lnL surface")) -->
+<!-- abline(v = log(6.7/3.), col = "red") -->
+
+<!-- summary.mat <- read.table("./Summary/EDN_ECP_Ind_MG94_HMM_1D_summary.txt") -->
+<!-- hessian <- read.table("./Summary/EDN_ECP_Ind_MG94_HMM_Hessian.txt") -->
+
+<!-- # Now calculate standard deviation of lnP -->
+<!-- lnP <- log(summary.mat[10,1]) -->
+<!-- sd.lnP <- 1.0 / sqrt(-hessian[2, 1]) -->
+<!-- low.cf <- exp(lnP - 1.96 * sd.lnP) -->
+<!-- up.cf  <- exp(lnP + 1.96 * sd.lnP) -->
+<!-- up.cf[up.cf > 1] <- 1.0 -->
+<!-- show.mat <- matrix(c(summary.mat[1,1], max(-lnL.surface[, 2]), 3.0/summary.mat[10, 1], -->
+<!--               hessian[1,1], hessian[2,1], 3.0 / up.cf, 3.0 / low.cf), 1, 7) -->
+<!-- rownames(show.mat) <- c("EDN_ECP") -->
+<!-- colnames(show.mat) <- c("lnL", "max lnL", "tract length", -->
+<!--                            "df", "d^2f", "c.i. tract length", "c.i tract length") -->
+<!-- show.mat -->
+<!-- ``` -->
+
 \newpage
-04212017 update
+12212017 update
 
-Now plot posterior log likelihood ratio: $ln(\frac{Pr(S_i = 1 | x)}{Pr(S_i = 0 | x)}$.
-
-The derivatives are $\frac{{\partial \ln L}}{{\partial \ln {p_{tract}}}}$ for 
-the first order and $\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}$ for
-second order. 
-
-The variance is calculated by:
-$Var(ln(p_{tract}))=\frac{1}{I(ln(p_{tract}))} \approx - \frac{1}{\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}}$
-
-95% confidence interval for $ln(p_{tract})$ is $ln(p_{tract}) \pm 1.96 * \sqrt {Var(\ln ({p_{tract}}))}$
-
-By transforming to $3.0 / p_{tract}$ to get the average tract length in nucleotide.
-
+HKY+PS-IGC results
 ```{r}
-# plot one paralog
-paralog = "EDN_ECP"
-lnL.ratio <- as.vector(read.table(paste("./summary/", paralog, "_MG94_nonclock_HMM_log_posterior_ratio.txt", sep = "")))
-Viterbi.path <- as.vector(read.table(paste("./summary/", paralog, "_MG94_nonclock_HMM_Viterbi_path.txt", sep = "")))
-lnL.surface <- as.vector(read.table(paste("./summary/", paralog, "_MG94_nonclock_HMM_lnL_surface.txt", sep = "")))
-IGC.sw.lnL <- as.vector(read.table(paste("./summary/", paralog, "_MG94_nonclock_sw_lnL.txt", sep = "")))
-Force.sw.lnL <- as.vector(read.table(paste("./summary/Force_", paralog, "_MG94_nonclock_sw_lnL.txt", sep = "")))
+all <- readLines("./Summary/PSJS_HKY_EDN_ECP_One_rate_Guess_1_rv_SCOK_nonclock_summary.txt", n = -1)
+col.names <- "Guess_1"
+row.names <- strsplit(all[length(all)], ' ')[[1]][-1]
+EDN.ECP.guess.1.result <- as.matrix(read.table("./Summary/PSJS_HKY_EDN_ECP_One_rate_Guess_1_rv_SCOK_nonclock_summary.txt", row.names = row.names, col.names = col.names))
 
-plot(lnL.ratio[, 1], xlab = "codon number", ylab = "log values",
-     type = "l", col = "black", lty = 1,
-     main = paste(paralog, " HMM result"),
-     ylim = c(min(-0.5, min(lnL.ratio)), max(lnL.ratio)))
-lines(1:dim(Viterbi.path)[1], Viterbi.path[, 1], type = "S", lty = 2, col = "red")
-#lines(1:dim(IGC.sw.lnL)[1], IGC.sw.lnL[, 2] - Force.sw.lnL[, 2], type = "l", lty = 3, col = "red")
-legend(1, max(lnL.ratio), legend = c("log posterior ratio", "Viterbi path"),
-       lty = c(1, 2), col = c( "black", "red"))
+all <- readLines("./Summary/PSJS_HKY_EDN_ECP_One_rate_Guess_2_rv_SCOK_nonclock_summary.txt", n = -1)
+col.names <- "Guess_2"
+row.names <- strsplit(all[length(all)], ' ')[[1]][-1]
+EDN.ECP.guess.2.result <- as.matrix(read.table("./Summary/PSJS_HKY_EDN_ECP_One_rate_Guess_2_rv_SCOK_nonclock_summary.txt", row.names = row.names, col.names = col.names))
 
-plot(-lnL.surface[, 1], xlab = "tract length in nucleotide", ylab= "lnL", type = "l", col = "black", lty = 1,
-     main = paste(paralog, " lnL surface"))
+gradient.file <- "./Summary/PSJS_HKY_EDN_ECP_One_rate_Guess_1_nonclock_gradient.txt"
+gradient.list <- read.table(gradient.file)
+cat("Verify gradient ~ 0: Gradient = ", colSums(gradient.list), ". Gradient/Objective = ", colSums(gradient.list)/EDN.ECP.guess.1.result["ll",1], "\n")
+Godambe.matrix.guess.1 <- read.table("./Summary/PSJS_HKY_EDN_ECP_One_rate_Guess_1_nonclock_godambe.txt")
 
-summary.mat <- read.table("./HMM_tract_MG94_nonclock_summary.txt")
+gradient.file <- "./Summary/PSJS_HKY_EDN_ECP_One_rate_Guess_2_nonclock_gradient.txt"
+gradient.list <- read.table(gradient.file)
+cat("Verify gradient ~ 0: Gradient = ", colSums(gradient.list), ". Gradient/Objective = ", colSums(gradient.list)/EDN.ECP.guess.2.result["ll",1], "\n")
+Godambe.matrix.guess.2 <- read.table("./Summary/PSJS_HKY_EDN_ECP_One_rate_Guess_2_nonclock_godambe.txt")
 
-# Now calculate standard deviation of lnP
-lnP <- log(3.0 / summary.mat[, 3])
-sd.lnP <- 1.0 / sqrt(-summary.mat[, 7])
-low.cf <- exp(lnP - 1.96 * sd.lnP)
-up.cf  <- exp(lnP + 1.96 * sd.lnP)
-up.cf[up.cf > 1] <- 1.0
-summary.mat <- cbind(summary.mat, 3.0 / up.cf, 3.0 / low.cf)
-rownames(summary.mat) <- c("EDN_ECP")
-colnames(summary.mat) <- c("lnL", "max lnL", "tract length",
-                           "Pr(S_0)", "Pr(S_1)",
-                           "df", "d^2f", "c.i. tract length", "c.i tract length")
-summary.mat
+Results <- cbind(EDN.ECP.guess.1.result, EDN.ECP.guess.2.result)
+Results
+
+Godambe.inverse <- cbind(c(solve(Godambe.matrix.guess.1)/dim(gradient.list)[1]), 
+                         c(solve(Godambe.matrix.guess.2)/dim(gradient.list)[1]))
+Godambe.inverse
+
+# Guess 2 has higher lnL
+which.max(Results["ll",])
+# effective Tau
+Results["init_rate", ] * Results["tract_length", ] * 3 / (1.0 + colSums(Results[c("r2", "r3"), ]))
+Results["init_rate", ] * Results["tract_length", ] * 3 /exp(1.96*sqrt(Godambe.inverse[1, ])) / (1.0 + colSums(Results[c("r2", "r3"), ])) 
+Results["init_rate", ] * Results["tract_length", ] * 3 *exp(1.96*sqrt(Godambe.inverse[1, ])) / (1.0 + colSums(Results[c("r2", "r3"), ]))
+
+# Tract length
+Results["tract_length", ]
+exp(log(Results["tract_length", ]-1.0)-1.96*sqrt(Godambe.inverse[4,]))+1.0
+exp(log(Results["tract_length", ]-1.0)+1.96*sqrt(Godambe.inverse[4,]))+1.0
 ```
 
-\newpage
-09132017 update
-
-Now plot lnL surface of MG94+IS-IGC+HMM model.
-
-The derivatives are $\frac{{\partial \ln L}}{{\partial \ln {p_{tract}}}}$ for 
-the first order and $\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}$ for
-second order. 
-
-The variance is calculated by:
-$Var(ln(p_{tract}))=\frac{1}{I(ln(p_{tract}))} \approx - \frac{1}{\frac{{\partial^2 \ln L}}{{\partial \ln {p_{tract}}}^2}}$
-
-95% confidence interval for $ln(p_{tract})$ is $ln(p_{tract}) \pm 1.96 * \sqrt {Var(\ln ({p_{tract}}))}$
-
-By transforming to $3.0 / p_{tract}$ to get the average tract length in nucleotide.
-
+HKY + IS-IGC results
 
 ```{r}
-# plot one paralog
-paralog = "EDN_ECP"
-lnL.ratio <- as.vector(read.table(paste("./summary/", paralog, "_Ind_MG94_HMM_Posterior_lnL.txt", sep = "")))
-Viterbi.path <- as.vector(read.table(paste("./summary/", paralog, "_Ind_MG94_HMM_Viterbi_array.txt", sep = "")))
-lnL.surface <- as.vector(read.table(paste("./plot/HMM_", paralog, "_lnL_1D_surface.txt", sep = "")))
+all <- readLines("./Summary/JS_HKY_EDN_ECP_One_rate_rv_nonclock_summary.txt", n = -1)
+col.names <- c("HKY+IS-IGC")
+row.names <- strsplit(all[length(all)], ' ')[[1]][-1]
+EDN.ECP.HKY.result <- as.matrix(read.table("./Summary/JS_HKY_EDN_ECP_One_rate_rv_nonclock_summary.txt", row.names = row.names, col.names = col.names))
 
-plot(1:dim(lnL.ratio)[1], lnL.ratio[, 2] - lnL.ratio[, 1], xlab = "codon number", ylab = "log values",
-     type = "l", col = "black", lty = 1,
-     main = paste(paralog, " HMM result"),
-     ylim = c(min(-0.5, min(lnL.ratio[, 2] - lnL.ratio[, 1])), max(lnL.ratio[, 2] - lnL.ratio[, 1])))
-lines(1:dim(Viterbi.path)[1], Viterbi.path[, 1], type = "S", lty = 2, col = "red")
-legend(1, max(lnL.ratio[, 2] - lnL.ratio[, 1]), legend = c("log posterior ratio", "Viterbi path"),
-       lty = c(1, 2), col = c( "black", "red"))
+all <- readLines("./Summary/Force_JS_HKY_EDN_ECP_One_rate_rv_nonclock_summary.txt", n = -1)
+col.names <- c("Force_HKY+IS-IGC")
+row.names <- strsplit(all[length(all)], ' ')[[1]][-1]
+Force.EDN.ECP.HKY.result <- as.matrix(read.table("./Summary/Force_JS_HKY_EDN_ECP_One_rate_rv_nonclock_summary.txt", row.names = row.names, col.names = col.names))
 
-plot.new()
-plot(-lnL.surface[, 1],lnL.surface[, 2], xlab = "log tract length in codon", ylab= "lnL", type = "l", col = "black", lty = 1,
-     main = paste(paralog, " lnL surface"))
-abline(v = log(6.7/3.), col = "red")
+gradient.file <- "./Summary/JS_HKY_EDN_ECP_One_rate_rv_nonclock_gradient.txt"
+gradient.list <- read.table(gradient.file)
+cat("Verify gradient ~ 0: Gradient = ", colSums(gradient.list), ". Gradient/Objective = ", colSums(gradient.list)/EDN.ECP.guess.1.result["ll",1], "\n")
+Godambe.matrix <- read.table("./Summary/JS_HKY_EDN_ECP_One_rate_rv_nonclock_godambe.txt")
+Godambe.JS <- cbind(diag(solve(Godambe.matrix)/dim(gradient.list)[1]))
 
-summary.mat <- read.table("./Summary/EDN_ECP_Ind_MG94_HMM_1D_summary.txt")
-hessian <- read.table("./Summary/EDN_ECP_Ind_MG94_HMM_Hessian.txt")
-
-# Now calculate standard deviation of lnP
-lnP <- log(summary.mat[10,1])
-sd.lnP <- 1.0 / sqrt(-hessian[2, 1])
-low.cf <- exp(lnP - 1.96 * sd.lnP)
-up.cf  <- exp(lnP + 1.96 * sd.lnP)
-up.cf[up.cf > 1] <- 1.0
-show.mat <- matrix(c(summary.mat[1,1], max(-lnL.surface[, 2]), 3.0/summary.mat[10, 1], 
-              hessian[1,1], hessian[2,1], 3.0 / up.cf, 3.0 / low.cf), 1, 7)
-rownames(show.mat) <- c("EDN_ECP")
-colnames(show.mat) <- c("lnL", "max lnL", "tract length",
-                           "df", "d^2f", "c.i. tract length", "c.i tract length")
-show.mat
+show.mat <- c(EDN.ECP.HKY.result["ll", ], 
+              EDN.ECP.HKY.result["ll", ] - Force.EDN.ECP.HKY.result["ll",],
+              EDN.ECP.HKY.result["Tau", ]*3.0/(1. + sum(EDN.ECP.HKY.result[c("r2", "r3"),])), 
+              EDN.ECP.HKY.result["Tau",]/exp(1.96*sqrt(Godambe.JS[7, ]))*3.0/(1. + sum(EDN.ECP.HKY.result[c("r2", "r3"),])), 
+              EDN.ECP.HKY.result["Tau",]*exp(1.96*sqrt(Godambe.JS[7, ]))*3.0/(1. + sum(EDN.ECP.HKY.result[c("r2", "r3"),])), 
+              EDN.ECP.HKY.result["r2", ],
+      EDN.ECP.HKY.result["r2",]/exp(1.96*sqrt(Godambe.JS[5,])),
+      EDN.ECP.HKY.result["r2",]*exp(1.96*sqrt(Godambe.JS[5,])),
+      EDN.ECP.HKY.result["r3",],
+      EDN.ECP.HKY.result["r3",]/exp(1.96*sqrt(Godambe.JS[6,])),
+      EDN.ECP.HKY.result["r3",]*exp(1.96*sqrt(Godambe.JS[6,]))
+              )
+names(show.mat) <- c("ll", "Diff", "Tau", "min", "max", 
+                        "r2", "min", "max", 
+                        "r3", "min", "max")
+round(show.mat, digits = 2)
 ```
+
