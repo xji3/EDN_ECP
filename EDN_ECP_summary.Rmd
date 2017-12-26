@@ -196,3 +196,40 @@ exp(log(Results["tract_length", ]-1.0)-1.96*sqrt(Godambe.inverse[4,]))+1.0
 exp(log(Results["tract_length", ]-1.0)+1.96*sqrt(Godambe.inverse[4,]))+1.0
 ```
 
+HKY + IS-IGC results
+
+```{r}
+all <- readLines("./Summary/JS_HKY_EDN_ECP_One_rate_rv_nonclock_summary.txt", n = -1)
+col.names <- c("HKY+IS-IGC")
+row.names <- strsplit(all[length(all)], ' ')[[1]][-1]
+EDN.ECP.HKY.result <- as.matrix(read.table("./Summary/JS_HKY_EDN_ECP_One_rate_rv_nonclock_summary.txt", row.names = row.names, col.names = col.names))
+
+all <- readLines("./Summary/Force_JS_HKY_EDN_ECP_One_rate_rv_nonclock_summary.txt", n = -1)
+col.names <- c("Force_HKY+IS-IGC")
+row.names <- strsplit(all[length(all)], ' ')[[1]][-1]
+Force.EDN.ECP.HKY.result <- as.matrix(read.table("./Summary/Force_JS_HKY_EDN_ECP_One_rate_rv_nonclock_summary.txt", row.names = row.names, col.names = col.names))
+
+gradient.file <- "./Summary/JS_HKY_EDN_ECP_One_rate_rv_nonclock_gradient.txt"
+gradient.list <- read.table(gradient.file)
+cat("Verify gradient ~ 0: Gradient = ", colSums(gradient.list), ". Gradient/Objective = ", colSums(gradient.list)/EDN.ECP.guess.1.result["ll",1], "\n")
+Godambe.matrix <- read.table("./Summary/JS_HKY_EDN_ECP_One_rate_rv_nonclock_godambe.txt")
+Godambe.JS <- cbind(diag(solve(Godambe.matrix)/dim(gradient.list)[1]))
+
+show.mat <- c(EDN.ECP.HKY.result["ll", ], 
+              EDN.ECP.HKY.result["ll", ] - Force.EDN.ECP.HKY.result["ll",],
+              EDN.ECP.HKY.result["Tau", ]*3.0/(1. + sum(EDN.ECP.HKY.result[c("r2", "r3"),])), 
+              EDN.ECP.HKY.result["Tau",]/exp(1.96*sqrt(Godambe.JS[7, ]))*3.0/(1. + sum(EDN.ECP.HKY.result[c("r2", "r3"),])), 
+              EDN.ECP.HKY.result["Tau",]*exp(1.96*sqrt(Godambe.JS[7, ]))*3.0/(1. + sum(EDN.ECP.HKY.result[c("r2", "r3"),])), 
+              EDN.ECP.HKY.result["r2", ],
+      EDN.ECP.HKY.result["r2",]/exp(1.96*sqrt(Godambe.JS[5,])),
+      EDN.ECP.HKY.result["r2",]*exp(1.96*sqrt(Godambe.JS[5,])),
+      EDN.ECP.HKY.result["r3",],
+      EDN.ECP.HKY.result["r3",]/exp(1.96*sqrt(Godambe.JS[6,])),
+      EDN.ECP.HKY.result["r3",]*exp(1.96*sqrt(Godambe.JS[6,]))
+              )
+names(show.mat) <- c("ll", "Diff", "Tau", "min", "max", 
+                        "r2", "min", "max", 
+                        "r3", "min", "max")
+round(show.mat, digits = 2)
+```
+
