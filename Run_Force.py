@@ -97,7 +97,8 @@ if __name__ == '__main__':
     test_JS = JSGeneconv(alignment_file, gene_to_orlg_file, args.cdna, tree_newick, DupLosList, x_js, pm_model, IGC_pm,
                          args.rate_variation, node_to_pos, terminal_node_list, save_file, force = force)
     test_JS.get_mle()
-    #test_JS.get_expectedNumGeneconv()
+    test_JS.get_expectedNumGeneconv()
+    test_JS.get_expectedMutationNum()
     test_JS.get_individual_summary(summary_file)
     godambe = test_JS.get_Godambe_matrix(test_JS.x, gradient_file, hessian_file, 1e-6)
     np.savetxt(open(godambe_file, 'w+'), np.array(godambe))

@@ -233,3 +233,19 @@ names(show.mat) <- c("ll", "Diff", "Tau", "min", "max",
 round(show.mat, digits = 2)
 ```
 
+####12302017 %changes due to IGC
+
+```{r}
+num.IGC <- sum(EDN.ECP.HKY.result[20:28,])
+num.Mut <- sum(EDN.ECP.HKY.result[c(29, 32:37), ])
+# % changes due to IGC
+num.IGC/(num.IGC+num.Mut)
+```
+
+
+Now save workspace.
+
+```{r}
+save.image("./EDN_ECP_Summary.RData")
+```
+

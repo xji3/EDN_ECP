@@ -1,0 +1,5 @@
+Macaque__ECP	1
+Macaque__EDN	2
+Chimpanzee__ECP	1
+Chimpanzee__EDN	2
+Tamarin__EDN	0
