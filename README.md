@@ -1,2 +1,2 @@
 # EDN_ECP
-Trying to repeat analysis Zhang et al. did on EDN ECP genes in primates
+Applying IGCexpansion methods to the famous  EDN ECP dataset of Zhang et al. in primates.
